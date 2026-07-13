@@ -3,29 +3,20 @@ import React, { useState, useEffect } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 function Page() {
-
-  // State for creating new student in the database
   const [studentData, setStudentData] = useState({
     name: "",
     age: "",
     grade: "",
     email: "",
   });
-
-  // state for displaying the student
   const [students, setStudents] = useState([]);
-
-  // state for selecting the student to edit
-  const [editingStudent, setEditingStudent] = useState(null)
-
-  // state for posting the edited student in the database
+  const [editingStudent, setEditingStudent] = useState(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
     age: "",
     grade: "",
     email: "",
   });
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,7 +49,6 @@ function Page() {
   const handleStudentSubmit = async (e) => {
     e.preventDefault();
 
-  
     if (
       !studentData.name.trim() ||
       !studentData.email.trim() ||
@@ -94,7 +84,7 @@ function Page() {
           grade: "",
           email: "",
         });
-        fetchStudents()
+        fetchStudents();
       } else {
         alert(`Error: "Failed to add student"}`);
       }
@@ -103,8 +93,9 @@ function Page() {
       console.error("Error adding student:", error);
       alert("Network error. Please try again.");
     }
-  }; 
+  };
 
+  // Start editing a student
   const startEditing = (student) => {
     setEditingStudent(student._id);
     setEditFormData({
@@ -126,6 +117,7 @@ function Page() {
     });
   };
 
+  // Save edited student
   const saveEditedStudent = async (studentId) => {
     if (
       !editFormData.name.trim() ||
@@ -168,61 +160,39 @@ function Page() {
     }
   };
 
-  useEffect(() => {
-    fetchStudents()
-  }, []);
-
-
-  // Edit student function (example, you can modify as needed)
-  const editStudent = async (studentId) => {
-    const response = await fetch(`http://localhost:5000/api/edit-student`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Api-Key":
-          "a94900debc1e85d1f366b693bea395f318b8d8556c4ecfae7003479cacbbaee9",
-      },
-      body: JSON.stringify({studentId})
-    } )
-  
-  const data = await response.json();
-  if (response.ok) {
-    fetchStudents()
-
-    alert("Student updated successfully!");
-  
-  } else {
-    alert(`Error: ${data.message || "Failed to update student"}`);
-  }}
-
-  // delete student function (example, you can modify as needed)
+  // Delete student function
   const deleteStudent = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this student?")) {
+      return;
+    }
+
     const response = await fetch(`http://localhost:5000/api/delete-student`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "X-Api-Key":
-          "a94900debc1e85d1f366b693bea395f318b8d8556c4ecfae7003479cacbbaee9",
+        "X-Api-Key": "a94900debc1e85d1f366b693bea395f318b8d8556c4ecfae7003479cacbbaee9",
       },
-      body: JSON.stringify({id})
-    } )
-  
-  const data = await response.json();
-  if (response.ok) {
-    fetchStudents()
+      body: JSON.stringify({ id }),
+    });
 
-    alert("Student deleted successfully!");
-  
-  } else {
-    alert(`Error: ${data.message || "Failed to delete student"}`);
-  }
-}
+    const data = await response.json();
+    if (response.ok) {
+      fetchStudents();
+      alert("Student deleted successfully!");
+    } else {
+      alert(`Error: ${data.message || "Failed to delete student"}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-50">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="mb-12">
-          <h1 className="tfext-4xl font-bold text-slate-900 mb-2">Dashboard</h1>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Dashboard</h1>
           <p className="text-slate-600">Manage and search for students</p>
         </div>
 
